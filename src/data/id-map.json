@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "idFormat": "IDs 1–999 use 3-digit zero padding (001). From 1000 onward, no leading zeros (1000, 1001, …). Keys are source filenames.",
+    "skipPolicy": "Skips variant generation when source SHA-256 matches _sourceSha256 and all outputs exist. Use npm run process-photos -- --force to regenerate."
+  },
+  "_sourceSha256": {
+    "001.jpeg": "695a04749a129df5e12be0e6d7f8a3adc654098084e2ceb6d7a5ef4112c2f245",
+    "002.jpeg": "9b920ab9f17d22918077e5eb67ca34c45abf8b179a935d0e2b60698148d16ff8",
+    "003.jpg": "6a18ad58f2a582a79030105bfa763c6cc8645d574bf27b1e493e973dba8c9a35",
+    "004.jpeg": "c10568d420a7a500918f77ceaec19273fb3aabcc2e6d6046926428c67aaa53e6",
+    "005.jpeg": "b5bc4892078793b17b9602e8e54d7bac98141f34ed87c04161b18151ac8a8c49",
+    "006.jpeg": "8bf3681c93df2abedca2f79e36f3c8b64e02dbffdfa0822b881df29f2aead89f",
+    "007.jpeg": "2a1c2e3ce85afcfe166cc58fb05bbc768a9e8bc886ccb8cd3bf6f1d3a897a3e4",
+    "008.jpeg": "a0365c99b13dd16b6bdc34e75b7e27072015b27eac13173ef414c0e4b8d6622f",
+    "009.jpeg": "94fa2fabe3fc5dd2a8ac93b7905eb438a6971d54a1f91837639747fb96238a2e",
+    "010.jpeg": "edcb4950bfd8d22b6b0fc1bcd8f022b39ef22fc66297ab102a86d59ab06423a5"
+  },
+  "001.jpeg": "001",
+  "002.jpeg": "002",
+  "003.jpg": "003",
+  "004.jpeg": "004",
+  "005.jpeg": "005",
+  "006.jpeg": "006",
+  "007.jpeg": "007",
+  "008.jpeg": "008",
+  "009.jpeg": "009",
+  "010.jpeg": "010"
+}

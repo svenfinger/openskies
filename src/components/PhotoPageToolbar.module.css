@@ -1,0 +1,6 @@
+.root {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 0;
+  height: auto;
+}
