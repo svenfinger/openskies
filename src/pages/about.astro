@@ -1,0 +1,21 @@
+---
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { siteOperator } from '../lib/site-operator';
+---
+
+<ProseLayout
+  title="About"
+  description="About OpenSkies"
+>
+  <p>
+    OpenSkies is a collection of sky photos you can download and use freely.
+  </p>
+  <p>
+    All photos are taken by hand, none are AI-generated. However, some
+    photos may be upscaled with AI to increase resolution. This is done to make
+    larger sizes available for download while preserving the original photograph.
+  </p>
+  <p>
+    Questions or feedback? Send me a <a href="https://x.com/messages/compose?recipient_id=2838010415">message on X</a> or an <a href={`mailto:${siteOperator.email}`}>email</a>.
+  </p>
+</ProseLayout>

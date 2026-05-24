@@ -1,0 +1,97 @@
+---
+import ProseLayout from '../layouts/ProseLayout.astro';
+import { siteOperator, siteUrl } from '../lib/site-operator';
+---
+
+<ProseLayout
+  title="Privacy"
+  description="Privacy policy for OpenSkies."
+>
+  <p>
+    This policy describes how I handle information when you visit
+    <a href={siteUrl}>{siteUrl.replace('https://', '')}</a>. I operate OpenSkies
+    as an individual. I do not offer user accounts, newsletters, or forms that
+    collect personal data on the site.
+  </p>
+
+  <h2>Who is responsible</h2>
+  <p>
+    I’m responsible for data processing on this site. For
+    privacy questions, contact me at
+    <a href={`mailto:${siteOperator.email}`}>{siteOperator.email}</a>. See all contact details on the
+    <a href="/imprint">imprint</a> page.
+  </p>
+
+  <h2>What I process</h2>
+  <p>
+    When you open pages or download photos, my hosting and content delivery
+    providers process technical data needed to deliver the site, such as your IP
+    address, browser type, requested URL, and time of access. This happens
+    automatically in the server and CDN logs.
+  </p>
+  <p>
+    I do not ask you to register, and I do not knowingly collect names, email
+    addresses, or other information you enter on OpenSkies, because the site
+    does not provide those features.
+  </p>
+
+  <h2>Hosting and CDN</h2>
+  <p>
+    This website is hosted on Cloudflare. Photos are stored and delivered via
+    Cloudflare at cdn.openskies.photos. Cloudflare processes
+    technical data as my processor to provide hosting, security, and
+    delivery. For more information, see
+    <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer">Cloudflare’s privacy policy</a>.
+  </p>
+
+  <h2>Cookies and similar technologies</h2>
+  <p>
+    I do not use analytics or advertising cookies on OpenSkies. The gallery may
+    update the page URL in your browser (for example when you filter by color or
+    open a photo) without storing a profile about you.
+  </p>
+  <p>
+    Cloudflare or your browser may set strictly necessary cookies or use local
+    storage for security or basic operation of the network; I do not use these to
+    track you across other websites.
+  </p>
+
+  <h2>Why I process data</h2>
+  <p>
+    I rely on my legitimate interest in operating a stable, secure public website
+    and delivering the photos you request (Art. 6(1)(f) GDPR). You can object to
+    processing based on legitimate interests by contacting me; I will weigh your
+    interests against mine.
+  </p>
+
+  <h2>How long I keep data</h2>
+  <p>
+    Access logs at my providers are kept only as long as needed for operations,
+    security, and troubleshooting, according to their retention practices, then
+    deleted or aggregated.
+  </p>
+
+  <h2>Transfers outside the EU</h2>
+  <p>
+    Cloudflare may process data in countries outside the European Economic Area.
+    Where required, appropriate safeguards (such as standard contractual clauses)
+    apply as described by Cloudflare.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    If GDPR applies to you, you have the right to access, rectify, erase, or
+    restrict processing of personal data I hold about you, to object to certain
+    processing, and to data portability where applicable. You may also lodge a
+    complaint with a supervisory authority. In Germany, you can contact the
+    authority responsible for your place of residence; for Hamburg, that is the
+    <a href="https://datenschutz-hamburg.de/" rel="noopener noreferrer">Hamburg Commissioner for Data Protection and Freedom of Information</a>.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    I may update this policy when the site or legal requirements change. The
+    current version is always published on this page.
+  </p>
+  <p><em>Last updated: May 2026</em></p>
+</ProseLayout>
