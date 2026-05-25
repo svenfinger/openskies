@@ -123,7 +123,7 @@ export default function PhotoModal({
           <Dialog.Title mb="0" trim="both">
             {label}
           </Dialog.Title>
-          <Flex align="center" gap="2" wrap="wrap" className={styles.toolbar}>
+          <Flex align="center" gap="4" wrap="wrap" className={styles.toolbar}>
             <PhotoDownloads photoId={photo.id} />
             <Dialog.Close>
               <IconButton variant="classic" highContrast color="gray" size="2" aria-label="Close">

@@ -1,5 +1,5 @@
 import { DownloadIcon } from '@radix-ui/react-icons';
-import { Button, DropdownMenu, Flex, ChevronDownIcon } from '@radix-ui/themes';
+import { Button, DropdownMenu, Flex, ChevronDownIcon, IconButton } from '@radix-ui/themes';
 import { photoUrl } from '../config';
 import { DOWNLOAD_ORIGINAL, DOWNLOAD_SIZES } from '../lib/photos';
 
@@ -16,12 +16,20 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
 
   return (
     <Flex gap="2" wrap="wrap" align="center">
+      <Button asChild variant="classic" color="blue" size="2">
+        <a
+          href={photoUrl(photoId, original.file)}
+          download={downloadFilename(photoId, original.file)}
+        >
+          <DownloadIcon width="16" height="16" />
+          Download
+        </a>
+      </Button>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Button variant="outline" color="gray" size="2">
-            Download size
+          <IconButton variant="classic" color="blue" size="2">
             <ChevronDownIcon />
-          </Button>
+          </IconButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
           {DOWNLOAD_SIZES.map((item) => (
@@ -45,16 +53,6 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
             </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
-
-      <Button asChild variant="classic" color="blue" size="2">
-        <a
-          href={photoUrl(photoId, original.file)}
-          download={downloadFilename(photoId, original.file)}
-        >
-          <DownloadIcon width="16" height="16" />
-          Download
-        </a>
-      </Button>
     </Flex>
   );
 }
