@@ -6,7 +6,7 @@ export default function SiteHeader() {
       <a className="site-logo" href="/">
         <img
           className="site-logo__img"
-          src="/logo.svg"
+          src="/logo.png"
           alt="OpenSkies"
           width="196"
           height="32"
