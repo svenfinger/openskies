@@ -1,6 +1,6 @@
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { Button, DropdownMenu, Flex, ChevronDownIcon, IconButton } from '@radix-ui/themes';
-import { photoUrl } from '../config';
+import { photoDownloadUrl } from '../config';
 import { DOWNLOAD_ORIGINAL, DOWNLOAD_SIZES } from '../lib/photos';
 
 interface PhotoDownloadsProps {
@@ -18,7 +18,7 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
     <Flex gap="2" wrap="wrap" align="center">
       <Button asChild variant="classic" color="blue" size="2">
         <a
-          href={photoUrl(photoId, original.file)}
+          href={photoDownloadUrl(photoId, original.file)}
           download={downloadFilename(photoId, original.file)}
         >
           <DownloadIcon width="16" height="16" />
@@ -35,7 +35,7 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
           {DOWNLOAD_SIZES.map((item) => (
             <DropdownMenu.Item key={item.file} asChild shortcut={item.detail}>
               <a
-                href={photoUrl(photoId, item.file)}
+                href={photoDownloadUrl(photoId, item.file)}
                 download={downloadFilename(photoId, item.file)}
               >
                 {item.label}
@@ -45,7 +45,7 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item asChild>
               <a
-                href={photoUrl(photoId, original.file)}
+                href={photoDownloadUrl(photoId, original.file)}
                 download={downloadFilename(photoId, original.file)}
               >
                 Original size
