@@ -53,7 +53,7 @@ export default function ColorFilter({ selected, onChange }: ColorFilterProps) {
               aria-pressed={isSelected}
               aria-label={formatBucketLabel(bucket)}
               title={formatBucketLabel(bucket)}
-              onClick={() => onChange(bucket)}
+              onClick={() => onChange(isSelected ? null : bucket)}
             />
           );
         })}

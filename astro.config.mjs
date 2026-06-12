@@ -6,6 +6,17 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://openskies.photos',
   integrations: [react()],
+  vite: {
+    server: {
+      proxy: {
+        '/download': {
+          target: 'https://cdn.openskies.photos',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/download\//, '/'),
+        },
+      },
+    },
+  },
   env: {
     schema: {
       SITE_OPERATOR_NAME: envField.string({
