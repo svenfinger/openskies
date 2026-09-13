@@ -68,5 +68,61 @@
     "height": 6048,
     "aspect": 1.333,
     "colorBucket": "blue"
+  },
+  {
+    "id": "011",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "012",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "013",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "014",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "015",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "016",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "017",
+    "width": 8064,
+    "height": 6048,
+    "aspect": 1.333,
+    "colorBucket": "blue"
+  },
+  {
+    "id": "018",
+    "width": 6048,
+    "height": 8064,
+    "aspect": 0.75,
+    "colorBucket": "gray"
   }
 ]
