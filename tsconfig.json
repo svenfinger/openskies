@@ -5,7 +5,9 @@
     "**/*"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    "src/worker.ts",
+    "worker-configuration.d.ts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

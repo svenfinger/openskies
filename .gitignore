@@ -1,6 +1,8 @@
 # build output
 dist/
 .astro/
+.wrangler/
+worker-configuration.d.ts
 
 # dependencies
 node_modules/
@@ -15,6 +17,8 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
 
 # photo pipeline (local only)
 photos-source/

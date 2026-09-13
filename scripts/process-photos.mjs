@@ -248,7 +248,7 @@ async function main() {
       idFormat:
         'IDs 1–999 use 3-digit zero padding (001). From 1000 onward, no leading zeros (1000, 1001, …). Keys are source filenames.',
       skipPolicy:
-        'Skips variant generation when source SHA-256 matches _sourceSha256 and all outputs exist. Use npm run process-photos -- --force to regenerate.',
+        'Skips variant generation when source SHA-256 matches _sourceSha256 and all outputs exist. Use pnpm process-photos -- --force to regenerate.',
     },
     _sourceSha256: Object.fromEntries(
       Object.entries(sourceHashes).sort(([a], [b]) =>
@@ -276,7 +276,7 @@ async function main() {
   console.log(`  Outputs: ${OUTPUT_FILES.join(', ')}`);
   console.log('  Color buckets:', bucketCounts);
   if (processed > 0) {
-    console.log('\nNext: npm run upload-r2');
+    console.log('\nNext: pnpm upload-r2');
   }
 }
 

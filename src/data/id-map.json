@@ -1,7 +1,7 @@
 {
   "_meta": {
     "idFormat": "IDs 1–999 use 3-digit zero padding (001). From 1000 onward, no leading zeros (1000, 1001, …). Keys are source filenames.",
-    "skipPolicy": "Skips variant generation when source SHA-256 matches _sourceSha256 and all outputs exist. Use npm run process-photos -- --force to regenerate."
+    "skipPolicy": "Skips variant generation when source SHA-256 matches _sourceSha256 and all outputs exist. Use pnpm process-photos -- --force to regenerate."
   },
   "_sourceSha256": {
     "001.jpeg": "695a04749a129df5e12be0e6d7f8a3adc654098084e2ceb6d7a5ef4112c2f245",

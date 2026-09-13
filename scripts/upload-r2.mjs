@@ -170,7 +170,7 @@ async function main() {
 
   const ids = await listPhotoIds();
   if (ids.length === 0) {
-    console.log('Nothing to upload — run npm run process-photos first.');
+    console.log('Nothing to upload — run pnpm process-photos first.');
     console.log(`  Expected: ${path.relative(ROOT, BUILD_DIR)}/001/thumb.jpg …`);
     process.exit(0);
   }

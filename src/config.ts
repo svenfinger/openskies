@@ -7,7 +7,7 @@ export function photoUrl(id: string, variant: string): string {
   return `${CDN_BASE}/${id}/${variant}`;
 }
 
-/** Same-origin download URL (proxied in dev, Cloudflare Pages Function in production). */
+/** Same-origin download URL (proxied in dev, Worker in production). */
 export function photoDownloadUrl(id: string, variant: string): string {
   return `/download/${id}/${variant}`;
 }
