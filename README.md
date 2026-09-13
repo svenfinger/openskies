@@ -7,17 +7,23 @@ Photo downloads are governed by the [license on the website](https://openskies.p
 ## Development
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env
-npm run dev
+pnpm dev
 ```
+
+## Deployment
+
+The site is a Cloudflare Worker with static assets. After `pnpm build`, deploy with `pnpm deploy`.
+
+Production downloads (`/download/...`) are handled by `src/worker.ts`. Local `pnpm dev` still proxies those URLs to the CDN.
 
 ## Photo workflow
 
 1. Add originals to `photos-source/` (gitignored). Supported: `.jpg`, `.jpeg`, `.png`, `.webp`, `.tif`, `.tiff`.
-2. `npm run process-photos` — writes `photos-build/{id}/` variants and updates `src/data/photos.json` and `id-map.json`. Skips unchanged sources when outputs already exist. Rebuild everything: `npm run process-photos -- --force`.
+2. `pnpm process-photos` — writes `photos-build/{id}/` variants and updates `src/data/photos.json` and `id-map.json`. Skips unchanged sources when outputs already exist. Rebuild everything: `pnpm process-photos -- --force`.
 3. Set each photo’s `colorBucket` in `src/data/photos.json` (`orange`, `blue`, `gray`). New photos default to `blue` until you edit the manifest.
-4. `npm run upload-r2` — syncs `photos-build/` to R2 (copy `.env.example` → `.env` or `.env.local`). Skips when remote ETag matches local MD5. Flags: `--force` re-upload all; `--dry-run` preview keys (no API calls).
+4. `pnpm upload-r2` — syncs `photos-build/` to R2 (copy `.env.example` → `.env` or `.env.local`). Skips when remote ETag matches local MD5. Flags: `--force` re-upload all; `--dry-run` preview keys (no API calls).
 
 ### Photo IDs
 

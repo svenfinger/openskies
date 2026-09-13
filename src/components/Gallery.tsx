@@ -97,7 +97,7 @@ export default function Gallery({ photos }: GalleryProps) {
     return (
       <p className={styles.empty}>
         No photos yet. Add originals to <code>photos-source/</code> and run{' '}
-        <code>npm run process-photos</code>.
+        <code>pnpm process-photos</code>.
       </p>
     );
   }
