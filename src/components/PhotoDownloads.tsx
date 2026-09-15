@@ -1,7 +1,17 @@
-import { DownloadIcon } from '@radix-ui/react-icons';
-import { Button, DropdownMenu, Flex, ChevronDownIcon, IconButton } from '@radix-ui/themes';
+import { ArrowDown01Icon, Download01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
 import { photoDownloadUrl } from '../config';
 import { DOWNLOAD_ORIGINAL, DOWNLOAD_SIZES } from '../lib/photos';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup, ButtonGroupSeparator } from '@/components/ui/button-group';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface PhotoDownloadsProps {
   photoId: string;
@@ -15,44 +25,54 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
   const original = DOWNLOAD_ORIGINAL;
 
   return (
-    <Flex gap="2" wrap="wrap" align="center">
-      <Button asChild variant="classic" color="blue" size="2">
-        <a
-          href={photoDownloadUrl(photoId, original.file)}
-          download={downloadFilename(photoId, original.file)}
-        >
-          <DownloadIcon width="16" height="16" />
-          Download
-        </a>
+    <ButtonGroup aria-label="Download photo">
+      <Button
+        nativeButton={false}
+        render={
+          <a
+            href={photoDownloadUrl(photoId, original.file)}
+            download={downloadFilename(photoId, original.file)}
+          />
+        }
+      >
+        <HugeiconsIcon icon={Download01Icon} strokeWidth={2} data-icon="inline-start" />
+        Download
       </Button>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton variant="classic" color="blue" size="2">
-            <ChevronDownIcon />
-          </IconButton>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
+      <ButtonGroupSeparator className="bg-primary-foreground/30" />
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={<Button size="icon" aria-label="Choose download size" />}
+        >
+          <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-44">
           {DOWNLOAD_SIZES.map((item) => (
-            <DropdownMenu.Item key={item.file} asChild shortcut={item.detail}>
-              <a
-                href={photoDownloadUrl(photoId, item.file)}
-                download={downloadFilename(photoId, item.file)}
-              >
-                {item.label}
-              </a>
-            </DropdownMenu.Item>
+            <DropdownMenuItem
+              key={item.file}
+              render={
+                <a
+                  href={photoDownloadUrl(photoId, item.file)}
+                  download={downloadFilename(photoId, item.file)}
+                />
+              }
+            >
+              {item.label}
+              <DropdownMenuShortcut>{item.detail}</DropdownMenuShortcut>
+            </DropdownMenuItem>
           ))}
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item asChild>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            render={
               <a
                 href={photoDownloadUrl(photoId, original.file)}
                 download={downloadFilename(photoId, original.file)}
-              >
-                Original size
-              </a>
-            </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
-    </Flex>
+              />
+            }
+          >
+            Original size
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </ButtonGroup>
   );
 }

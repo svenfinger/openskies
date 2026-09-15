@@ -7,17 +7,10 @@ export const COLOR_BUCKET_SWATCHES: Record<ColorBucket, string> = {
   gray: '#a8aeb4',
 };
 
-/** Radix accent colors aligned with each bucket’s swatch (see COLOR_BUCKET_SWATCHES). */
-export const COLOR_BUCKET_RADIX_COLORS = {
-  orange: 'orange',
-  blue: 'blue',
-  gray: 'gray',
-} as const satisfies Record<ColorBucket, string>;
-
 export const COLOR_BUCKET_ORDER: ColorBucket[] = ['orange', 'blue', 'gray'];
 
 export function formatBucketLabel(bucket: ColorBucket): string {
-  return bucket;
+  return bucket.charAt(0).toUpperCase() + bucket.slice(1);
 }
 
 export function isColorBucket(value: string): value is ColorBucket {
