@@ -6,13 +6,12 @@ import {
   photoPath,
   readColorParam,
 } from '../lib/history';
-import { photoLabel, sortPhotosById, thumbDimensions } from '../lib/photos';
+import { photoLabel, sortPhotosById } from '../lib/photos';
 import type { ColorBucket, Photo } from '../types/photo';
 import { photoUrl } from '../config';
 import ColorFilter from './ColorFilter';
 import PhotoModal from './PhotoModal';
-import RadixTheme from './RadixTheme';
-import styles from './Gallery.module.css';
+import { Card } from '@/components/ui/card';
 
 interface GalleryProps {
   photos: Photo[];
@@ -95,42 +94,47 @@ export default function Gallery({ photos }: GalleryProps) {
 
   if (photos.length === 0) {
     return (
-      <p className={styles.empty}>
-        No photos yet. Add originals to <code>photos-source/</code> and run{' '}
-        <code>pnpm process-photos</code>.
+      <p className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+        No photos yet. Add originals to <code className="text-foreground">photos-source/</code> and run{' '}
+        <code className="text-foreground">pnpm process-photos</code>.
       </p>
     );
   }
 
   return (
-    <RadixTheme>
+    <>
       <ColorFilter selected={colorFilter} onChange={setFilter} />
 
       {filtered.length === 0 ? (
-        <p className={styles.empty}>No photos match this color filter.</p>
+        <p className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+          No photos match this color filter.
+        </p>
       ) : (
-        <ul className={styles.gallery}>
+        <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.map((photo) => {
-            const { width, height } = thumbDimensions(photo);
             const label = photoLabel(photo.id);
 
             return (
               <li key={photo.id}>
                 <a
-                  className={styles.item}
                   href={photoPath(photo.id)}
-                  style={{ aspectRatio: String(photo.aspect) }}
+                  className="group block rounded-[min(var(--radius-4xl),24px)] focus-visible:ring-3 focus-visible:ring-ring/30"
+                  aria-label={label}
                   onClick={(event) => openPhoto(photo.id, event)}
                 >
-                  <img
-                    className={styles.image}
-                    src={photoUrl(photo.id, 'thumb.jpg')}
-                    alt={label}
-                    width={width}
-                    height={height}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <Card className="gap-0 py-0 shadow-none">
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        src={photoUrl(photo.id, 'thumb.jpg')}
+                        alt={label}
+                        width={600}
+                        height={600}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  </Card>
                 </a>
               </li>
             );
@@ -143,6 +147,6 @@ export default function Gallery({ photos }: GalleryProps) {
         photoId={openPhotoId}
         onPhotoIdChange={handlePhotoIdChange}
       />
-    </RadixTheme>
+    </>
   );
 }

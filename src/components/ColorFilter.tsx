@@ -1,63 +1,53 @@
-import { Button, Flex, IconButton, Separator } from '@radix-ui/themes';
 import {
   COLOR_BUCKET_ORDER,
-  COLOR_BUCKET_RADIX_COLORS,
   formatBucketLabel,
 } from '../lib/color-buckets';
 import type { ColorBucket } from '../types/photo';
-import styles from './ColorFilter.module.css';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface ColorFilterProps {
   selected: ColorBucket | null;
   onChange: (bucket: ColorBucket | null) => void;
 }
 
+const ANY_COLOR = 'any';
+
+const COLOR_OPTIONS = [
+  { value: ANY_COLOR, label: 'Any color' },
+  ...COLOR_BUCKET_ORDER.map((bucket) => ({
+    value: bucket,
+    label: formatBucketLabel(bucket),
+  })),
+];
+
 export default function ColorFilter({ selected, onChange }: ColorFilterProps) {
-  const isAllSelected = selected === null;
-
   return (
-    <Flex
-      align="center"
-      gap="4"
-      wrap="wrap"
-      mb="6"
-      role="group"
-      aria-label="Filter by color"
-    >
-      <Button
-        type="button"
-        variant={isAllSelected ? 'classic' : 'outline'}
-        color="gray"
-        size="3"
-        radius="full"
-        highContrast={isAllSelected}
-        aria-pressed={isAllSelected}
-        onClick={() => onChange(null)}
+    <div className="mb-16 flex justify-center">
+      <Select
+        items={COLOR_OPTIONS}
+        value={selected ?? ANY_COLOR}
+        onValueChange={(value) => {
+          onChange(value && value !== ANY_COLOR ? (value as ColorBucket) : null);
+        }}
       >
-        Any color
-      </Button>
-
-      <Separator orientation="vertical" decorative className={styles.divider} />
-
-      <Flex align="center" gap="2" wrap="wrap">
-        {COLOR_BUCKET_ORDER.map((bucket) => {
-          const isSelected = selected === bucket;
-          return (
-            <IconButton
-              key={bucket}
-              type="button"
-              variant={isSelected ? 'classic' : 'solid'}
-              color={COLOR_BUCKET_RADIX_COLORS[bucket]}
-              size={isSelected ? '3' : '2'}
-              radius="full"
-              aria-pressed={isSelected}
-              aria-label={formatBucketLabel(bucket)}
-              title={formatBucketLabel(bucket)}
-              onClick={() => onChange(isSelected ? null : bucket)}
-            />
-          );
-        })}
-      </Flex>
-    </Flex>
+        <SelectTrigger className="min-w-44" aria-label="Filter by color">
+          <SelectValue placeholder="Any color" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY_COLOR}>Any color</SelectItem>
+          {COLOR_BUCKET_ORDER.map((bucket) => (
+            <SelectItem key={bucket} value={bucket}>
+              {formatBucketLabel(bucket)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

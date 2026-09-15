@@ -1,27 +1,19 @@
 ---
-import SiteFooter from '../components/SiteFooter.tsx';
+import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.tsx';
 import { SITE_NAME } from '../config';
 
 interface Props {
   title?: string;
   description?: string;
-  containerSize?: '2' | '4';
-  containerAlign?: 'left' | 'center';
-  /** Radix spacing scale for vertical padding (8 = 32px, 9 = 40px). */
-  containerPy?: '8' | '9';
+  container?: 'wide' | 'narrow';
 }
 
 const {
   title = SITE_NAME,
   description = 'Free sky photos to download and use.',
-  containerSize = '4',
-  containerAlign = 'left',
-  containerPy = '8',
+  container = 'wide',
 } = Astro.props;
-
-const containerAlignClass =
-  containerAlign === 'center' ? 'rt-r-ai-center' : '';
 
 const pageTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -29,16 +21,7 @@ const shareImage = new URL('/share.png', Astro.site);
 ---
 
 <!doctype html>
-<!-- Radix Theme: accentColor=blue grayColor=mauve radius=large appearance=light -->
-<html
-  lang="en"
-  class="radix-themes light"
-  data-is-root-theme="true"
-  data-accent-color="blue"
-  data-gray-color="mauve"
-  data-radius="large"
-  data-scaling="100%"
->
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -61,42 +44,17 @@ const shareImage = new URL('/share.png', Astro.site);
     <title>{pageTitle}</title>
   </head>
   <body>
-    <header class="site-header">
-      <SiteHeader />
-    </header>
-    <main class="site-main">
+    <SiteHeader client:load currentPath={Astro.url.pathname} />
+    <main class="flex-1 pt-16">
       <div
         class:list={[
-          'site-container',
-          'rt-Container',
-          `rt-r-size-${containerSize}`,
-          containerAlignClass,
-          `rt-r-py-${containerPy}`,
-          'rt-r-px-4',
+          'mx-auto w-full px-4',
+          container === 'narrow' ? 'max-w-2xl py-16' : 'max-w-[81.25rem] py-8',
         ]}
       >
-        <div class="rt-ContainerInner">
-          <slot />
-        </div>
+        <slot />
       </div>
     </main>
-    <footer class="site-footer">
-      <SiteFooter />
-    </footer>
   </body>
 </html>
 
-<style is:global>
-  @import '../styles/global.css';
-</style>
-
-<style>
-  .site-header {
-    border-bottom: 1px solid var(--gray-a6);
-  }
-
-  .site-footer {
-    border-top: 1px solid var(--gray-a6);
-  }
-
-</style>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PhotoPageToolbar from '../../components/PhotoPageToolbar.tsx';
+import PhotoDownloads from '../../components/PhotoDownloads.tsx';
 import { SITE_NAME, photoUrl } from '../../config';
 import photosJson from '../../data/photos.json';
 import {
@@ -32,24 +32,24 @@ const previewSrc = photoUrl(photo.id, 'preview.jpg');
 ---
 
 <BaseLayout title={label} description={`Download ${label} — free sky photo from ${SITE_NAME}.`}>
-  <article class="photo">
-    <nav class="photo__nav" aria-label="Photo navigation">
-      <div class="photo__nav-prev">
+  <article class="flex w-full flex-col gap-8">
+    <nav class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 text-sm" aria-label="Photo navigation">
+      <div>
         {
           prev ? (
-            <a class="photo__nav-link" href={`/photo/${prev.id}`}>
+            <a class="block truncate text-muted-foreground hover:text-foreground" href={`/photo/${prev.id}`}>
               ← {photoLabel(prev.id)}
             </a>
           ) : null
         }
       </div>
-      <div class="photo__nav-center">
-        <a class="photo__nav-link photo__nav-link--center" href="/">All photos</a>
+      <div class="justify-self-center">
+        <a class="block font-medium text-muted-foreground hover:text-foreground" href="/">All photos</a>
       </div>
-      <div class="photo__nav-next">
+      <div class="justify-self-end text-right">
         {
           next ? (
-            <a class="photo__nav-link" href={`/photo/${next.id}`}>
+            <a class="block truncate text-muted-foreground hover:text-foreground" href={`/photo/${next.id}`}>
               {photoLabel(next.id)} →
             </a>
           ) : null
@@ -57,16 +57,16 @@ const previewSrc = photoUrl(photo.id, 'preview.jpg');
       </div>
     </nav>
 
-    <div class="photo__head">
-      <h1 class="photo__title">{label}</h1>
-      <div class="photo__actions">
-        <PhotoPageToolbar client:load photoId={photo.id} />
+    <div class="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <h1 class="m-0 font-heading text-xl font-medium">{label}</h1>
+      <div class="flex sm:justify-end">
+        <PhotoDownloads client:load photoId={photo.id} />
       </div>
     </div>
 
-    <figure class="photo__figure">
+    <figure class="m-0 w-full overflow-hidden rounded-xl bg-muted">
       <img
-        class="photo__image"
+        class="block h-auto w-full object-contain object-center"
         src={previewSrc}
         alt={label}
         width={preview.width}
@@ -76,129 +76,8 @@ const previewSrc = photoUrl(photo.id, 'preview.jpg');
       />
     </figure>
 
-    <p class="photo__license">
-      Free to use under the <a href="/license">OpenSkies license</a>.
+    <p class="m-0 text-center text-sm text-muted-foreground">
+      Free to use under the <a class="underline underline-offset-4 hover:text-foreground" href="/license">OpenSkies license</a>.
     </p>
   </article>
 </BaseLayout>
-
-<style>
-  .photo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    width: 100%;
-  }
-
-  .photo__nav {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--space-4);
-    width: 100%;
-    font-size: var(--font-size-2);
-    line-height: var(--line-height-2);
-  }
-
-  .photo__nav-prev {
-    justify-self: start;
-  }
-
-  .photo__nav-center {
-    justify-self: center;
-  }
-
-  .photo__nav-next {
-    justify-self: end;
-    text-align: right;
-  }
-
-  .photo__nav-link {
-    display: block;
-    color: var(--gray-11);
-    text-decoration: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .photo__nav-link:hover {
-    color: var(--gray-12);
-  }
-
-  .photo__nav-link--center {
-    font-weight: var(--font-weight-medium);
-  }
-
-  .photo__head {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-3);
-    width: 100%;
-  }
-
-  .photo__title {
-    margin: 0;
-    font-family: var(--heading-font-family);
-    font-size: calc(var(--font-size-5) * var(--heading-font-size-adjust));
-    font-weight: var(--font-weight-medium);
-    line-height: var(--heading-line-height-5);
-    letter-spacing: calc(var(--letter-spacing-5) + var(--heading-letter-spacing));
-    color: var(--gray-12);
-  }
-
-  .photo__actions {
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .photo__figure {
-    margin: 0;
-    width: 100%;
-    overflow: hidden;
-    border-radius: var(--radius-3);
-    background: var(--gray-3);
-  }
-
-  .photo__image {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    object-position: center;
-  }
-
-  .photo__license {
-    margin: 0;
-    font-size: var(--font-size-2);
-    line-height: var(--line-height-2);
-    color: var(--gray-11);
-    text-align: center;
-  }
-
-  .photo__license a {
-    color: var(--gray-11);
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-underline-offset: calc(0.025em + 2px);
-  }
-
-  .photo__license a:hover {
-    color: var(--gray-12);
-  }
-
-  @media (min-width: 40rem) {
-    .photo__head {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4);
-    }
-
-    .photo__actions {
-      flex: 0 0 auto;
-      justify-content: flex-end;
-    }
-  }
-</style>

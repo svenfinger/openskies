@@ -1,4 +1,6 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, envField } from 'astro/config';
 import react from '@astrojs/react';
 
@@ -7,6 +9,12 @@ export default defineConfig({
   site: 'https://openskies.photos',
   integrations: [react()],
   vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
     server: {
       proxy: {
         '/download': {

@@ -1,12 +1,3 @@
-import { Cross2Icon } from '@radix-ui/react-icons';
-import {
-  Box,
-  Dialog,
-  Flex,
-  IconButton,
-  Link,
-  Text,
-} from '@radix-ui/themes';
 import { useCallback, useEffect, useRef } from 'react';
 import { photoUrl } from '../config';
 import { photoPath } from '../lib/history';
@@ -17,7 +8,13 @@ import {
 } from '../lib/photos';
 import type { Photo } from '../types/photo';
 import PhotoDownloads from './PhotoDownloads';
-import styles from './PhotoModal.module.css';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const SWIPE_THRESHOLD = 48;
 
@@ -99,59 +96,39 @@ export default function PhotoModal({
   const preview = previewDimensions(photo);
 
   return (
-    <Dialog.Root
+    <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) close();
       }}
     >
-      <Dialog.Content
-        className={styles.content}
-        maxWidth="56rem"
-        size="3"
-        aria-describedby={undefined}
+      <DialogContent
+        className="flex max-h-[min(90dvh,calc(100dvh-2rem))] max-w-[calc(100%-2rem)] flex-col gap-4 overflow-y-auto px-6 pt-4 pb-6 sm:max-w-4xl"
+        showCloseButton
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <Flex
-          className={styles.chrome}
-          justify="between"
-          align="center"
-          gap="3"
-          wrap="wrap"
-        >
-          <Dialog.Title mb="0" trim="both">
-            {label}
-          </Dialog.Title>
-          <Flex align="center" gap="4" wrap="wrap" className={styles.toolbar}>
-            <PhotoDownloads photoId={photo.id} />
-            <Dialog.Close>
-              <IconButton variant="classic" highContrast color="gray" size="2" aria-label="Close">
-                <Cross2Icon width="16" height="16" />
-              </IconButton>
-            </Dialog.Close>
-          </Flex>
-        </Flex>
+        <DialogHeader className="flex-row flex-wrap items-center justify-between gap-3 pr-10">
+          <DialogTitle>{label}</DialogTitle>
+          <PhotoDownloads photoId={photo.id} />
+        </DialogHeader>
 
-        <Box className={styles.imageWrap}>
+        <div className="min-h-0 overflow-hidden rounded-xl bg-muted">
           <img
-            className={styles.image}
+            className="mx-auto max-h-[min(72dvh,calc(90dvh-9rem))] w-full object-contain touch-pan-y"
             src={photoUrl(photo.id, 'preview.jpg')}
             alt={label}
             width={preview.width}
             height={preview.height}
             decoding="async"
           />
-        </Box>
+        </div>
 
-        <Text size="2" color="gray" className={styles.chrome} align="center">
+        <DialogDescription className="text-center">
           Free to use under the{' '}
-          <Link href="/license" color="gray" underline="always">
-            OpenSkies license
-          </Link>
-          .
-        </Text>
-      </Dialog.Content>
-    </Dialog.Root>
+          <a href="/license">OpenSkies license</a>.
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
   );
 }
