@@ -1,13 +1,8 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { Menu01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
+import { cn } from 'cn';
 import { Button } from '@/components/ui/button';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu';
 import {
   Sheet,
   SheetContent,
@@ -17,13 +12,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { NAV_LINKS } from '@/lib/nav';
+import { LEGAL_LINKS, NAV_LINKS, isCurrentPath } from '@/lib/nav';
 
 interface SiteHeaderProps {
   currentPath?: string;
 }
 
+const copyrightLinkClass =
+  'underline-offset-4 hover:text-foreground hover:underline';
+
 export default function SiteHeader({ currentPath = '/' }: SiteHeaderProps) {
+  const menuRef = useRef<HTMLDivElement>(null);
+
   useLayoutEffect(() => {
     const root = document.documentElement;
     const gutter = Math.max(0, window.innerWidth - root.clientWidth);
@@ -35,7 +35,7 @@ export default function SiteHeader({ currentPath = '/' }: SiteHeaderProps) {
       data-slot="site-header"
       className="fixed inset-x-0 top-0 z-40 bg-background/70 backdrop-blur-xl supports-backdrop-filter:bg-background/55"
     >
-      <div className="mx-auto flex h-16 w-full max-w-[81.25rem] items-center justify-between px-4">
+      <div className="mx-auto flex h-16 w-full max-w-325 items-center justify-between px-4">
         <a className="block leading-none" href="/">
           <img
             className="block h-8 w-auto dark:hidden"
@@ -61,42 +61,61 @@ export default function SiteHeader({ currentPath = '/' }: SiteHeaderProps) {
           >
             <HugeiconsIcon icon={Menu01Icon} strokeWidth={2} />
           </SheetTrigger>
-          <SheetContent side="right" className="w-72">
+          <SheetContent
+            ref={menuRef}
+            side="right"
+            className="w-72"
+            initialFocus={() => menuRef.current}
+          >
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
               <SheetDescription className="sr-only">
                 Site navigation
               </SheetDescription>
             </SheetHeader>
-            <NavigationMenu
-              orientation="vertical"
-              className="max-w-none flex-none items-stretch justify-start px-4"
-            >
-              <NavigationMenuList className="w-full flex-col items-stretch gap-1">
-                {NAV_LINKS.map((link) => (
-                  <NavigationMenuItem key={link.href} className="w-full">
-                    <NavigationMenuLink
-                      href={link.href}
-                      active={currentPath === link.href}
-                      className="w-full px-3 py-2"
-                    >
-                      {link.label}
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+            <nav className="flex flex-col gap-1 px-4" aria-label="Site">
+              {NAV_LINKS.map((link) => {
+                const current = isCurrentPath(currentPath, link.href);
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    aria-current={current ? 'page' : undefined}
+                    className={cn(
+                      'rounded-2xl px-3 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1',
+                      current && 'bg-muted',
+                    )}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+            </nav>
             <SheetFooter>
               <p className="text-sm text-muted-foreground">
                 © 2026{' '}
                 <a
-                  href="https://svenfinger.co"
+                  href="https://svenfinger.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline-offset-4 hover:text-foreground hover:underline"
+                  className={copyrightLinkClass}
                 >
                   Sven Finger
                 </a>
+                {LEGAL_LINKS.map((link) => (
+                  <span key={link.href}>
+                    {' · '}
+                    <a
+                      href={link.href}
+                      aria-current={
+                        isCurrentPath(currentPath, link.href) ? 'page' : undefined
+                      }
+                      className={copyrightLinkClass}
+                    >
+                      {link.label}
+                    </a>
+                  </span>
+                ))}
               </p>
             </SheetFooter>
           </SheetContent>
