@@ -38,7 +38,7 @@ export default function PhotoDownloads({ photoId }: PhotoDownloadsProps) {
         <HugeiconsIcon icon={Download01Icon} strokeWidth={2} data-icon="inline-start" />
         Download
       </Button>
-      <ButtonGroupSeparator className="bg-primary-foreground/30" />
+      <ButtonGroupSeparator />
       <DropdownMenu>
         <DropdownMenuTrigger
           render={<Button size="icon" aria-label="Choose download size" />}
