@@ -31,9 +31,14 @@ export default function PhotoModal({
 }: PhotoModalProps) {
   const touchStartX = useRef<number | null>(null);
   const skipClickFromSwipe = useRef(false);
+  const lastPhotoRef = useRef<Photo | null>(null);
   const photo = photoId ? (photos.find((p) => p.id === photoId) ?? null) : null;
+  if (photo) lastPhotoRef.current = photo;
+  const displayedPhoto = photo ?? lastPhotoRef.current;
   const open = photo !== null;
-  const { prev, next } = photo ? getNeighbors(photos, photo.id) : { prev: null, next: null };
+  const { prev, next } = displayedPhoto
+    ? getNeighbors(photos, displayedPhoto.id)
+    : { prev: null, next: null };
 
   const goTo = useCallback(
     (id: string) => {
@@ -115,10 +120,10 @@ export default function PhotoModal({
     else if (delta > 0 && prev) goTo(prev.id);
   };
 
-  if (!photo) return null;
+  if (!displayedPhoto) return null;
 
-  const label = photoLabel(photo.id);
-  const preview = previewDimensions(photo);
+  const label = photoLabel(displayedPhoto.id);
+  const preview = previewDimensions(displayedPhoto);
 
   return (
     <Dialog
@@ -135,14 +140,14 @@ export default function PhotoModal({
       >
         <DialogHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-3 pr-10">
           <DialogTitle>{label}</DialogTitle>
-          <PhotoDownloads photoId={photo.id} />
+          <PhotoDownloads photoId={displayedPhoto.id} />
         </DialogHeader>
 
         <div className="relative flex min-h-0 flex-1 select-none items-center justify-center overflow-hidden rounded-xl bg-muted">
           <img
             className="pointer-events-none size-full object-contain touch-pan-y"
             draggable={false}
-            src={photoUrl(photo.id, 'preview.jpg')}
+            src={photoUrl(displayedPhoto.id, 'preview.jpg')}
             alt={label}
             width={preview.width}
             height={preview.height}

@@ -131,16 +131,16 @@
     scrollbar-gutter: stable;
   }
 
-  html:has([data-slot='sheet-content']),
-  html:has([data-slot='dialog-content']) {
+  html:has([data-slot='sheet-content'][data-open]),
+  html:has([data-slot='dialog-content'][data-open]) {
     scrollbar-gutter: auto !important;
     overflow: hidden !important;
   }
 
-  html:has([data-slot='sheet-content']) body,
-  html:has([data-slot='dialog-content']) body,
-  html:has([data-slot='sheet-content']) [data-slot='site-header'],
-  html:has([data-slot='dialog-content']) [data-slot='site-header'] {
+  html:has([data-slot='sheet-content'][data-open]) body,
+  html:has([data-slot='dialog-content'][data-open]) body,
+  html:has([data-slot='sheet-content'][data-open]) [data-slot='site-header'],
+  html:has([data-slot='dialog-content'][data-open]) [data-slot='site-header'] {
     padding-right: var(--scrollbar-gutter-size, 0px);
   }
 
