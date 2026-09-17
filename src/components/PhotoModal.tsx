@@ -30,6 +30,7 @@ export default function PhotoModal({
   onPhotoIdChange,
 }: PhotoModalProps) {
   const touchStartX = useRef<number | null>(null);
+  const skipClickFromSwipe = useRef(false);
   const photo = photoId ? (photos.find((p) => p.id === photoId) ?? null) : null;
   const open = photo !== null;
   const { prev, next } = photo ? getNeighbors(photos, photo.id) : { prev: null, next: null };
@@ -60,6 +61,20 @@ export default function PhotoModal({
     if (!open) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          'input, textarea, select, [contenteditable="true"], [role="menu"], [role="listbox"]',
+        )
+      ) {
+        return;
+      }
+
+      // Base UI dialogs stop composite keys (arrows) from bubbling, so listen on capture.
       if (event.key === 'ArrowLeft' && prev) {
         event.preventDefault();
         goTo(prev.id);
@@ -69,11 +84,20 @@ export default function PhotoModal({
       }
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
   }, [open, prev, next, goTo]);
 
+  const goToUnlessSwiped = (id: string) => {
+    if (skipClickFromSwipe.current) {
+      skipClickFromSwipe.current = false;
+      return;
+    }
+    goTo(id);
+  };
+
   const onTouchStart = (event: React.TouchEvent) => {
+    skipClickFromSwipe.current = false;
     touchStartX.current = event.touches[0]?.clientX ?? null;
   };
 
@@ -86,6 +110,7 @@ export default function PhotoModal({
     const delta = endX - startX;
     if (Math.abs(delta) < SWIPE_THRESHOLD) return;
 
+    skipClickFromSwipe.current = true;
     if (delta < 0 && next) goTo(next.id);
     else if (delta > 0 && prev) goTo(prev.id);
   };
@@ -103,28 +128,45 @@ export default function PhotoModal({
       }}
     >
       <DialogContent
-        className="flex max-h-[min(90dvh,calc(100dvh-2rem))] max-w-[calc(100%-2rem)] flex-col gap-4 overflow-y-auto px-6 pt-4 pb-6 sm:max-w-4xl"
+        className="flex h-[calc(100dvh-3rem)] max-h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[min(1920px,calc(100%-3rem))] flex-col gap-4 overflow-hidden px-6 pt-4 pb-6 sm:max-w-[min(1920px,calc(100%-3rem))]"
         showCloseButton
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <DialogHeader className="flex-row flex-wrap items-center justify-between gap-3 pr-10">
+        <DialogHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-3 pr-10">
           <DialogTitle>{label}</DialogTitle>
           <PhotoDownloads photoId={photo.id} />
         </DialogHeader>
 
-        <div className="min-h-0 overflow-hidden rounded-xl bg-muted">
+        <div className="relative flex min-h-0 flex-1 select-none items-center justify-center overflow-hidden rounded-xl bg-muted">
           <img
-            className="mx-auto max-h-[min(72dvh,calc(90dvh-9rem))] w-full object-contain touch-pan-y"
+            className="pointer-events-none size-full object-contain touch-pan-y"
+            draggable={false}
             src={photoUrl(photo.id, 'preview.jpg')}
             alt={label}
             width={preview.width}
             height={preview.height}
             decoding="async"
           />
+          {prev ? (
+            <button
+              type="button"
+              className="absolute inset-y-0 left-0 z-10 w-1/2 cursor-pointer touch-manipulation border-0 bg-transparent p-0"
+              aria-label={`Previous photo (${photoLabel(prev.id)})`}
+              onClick={() => goToUnlessSwiped(prev.id)}
+            />
+          ) : null}
+          {next ? (
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 z-10 w-1/2 cursor-pointer touch-manipulation border-0 bg-transparent p-0"
+              aria-label={`Next photo (${photoLabel(next.id)})`}
+              onClick={() => goToUnlessSwiped(next.id)}
+            />
+          ) : null}
         </div>
 
-        <DialogDescription className="text-center">
+        <DialogDescription className="shrink-0 text-center">
           Free to use under the{' '}
           <a href="/license">OpenSkies license</a>.
         </DialogDescription>
