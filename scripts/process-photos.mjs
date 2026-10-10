@@ -116,9 +116,11 @@ async function writeOriginal(sourcePath, destPath) {
  * @param {string} sourcePath
  */
 async function readDimensions(sourcePath) {
-  const meta = await sharp(sourcePath).rotate().metadata();
-  const width = meta.width ?? 0;
-  const height = meta.height ?? 0;
+  // metadata() reports stored pixels, even after rotate(). Read the dimensions
+  // after EXIF orientation, matching the auto-rotated download variants.
+  const meta = await sharp(sourcePath).metadata();
+  const width = meta.autoOrient?.width ?? meta.width ?? 0;
+  const height = meta.autoOrient?.height ?? meta.height ?? 0;
   if (!width || !height) {
     throw new Error('could not read image dimensions');
   }

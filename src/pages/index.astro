@@ -8,15 +8,19 @@ const photos = photosJson as Photo[];
 ---
 
 <BaseLayout>
-  <div class="space-y-12 pt-8">
-    <header class="flex flex-col items-center space-y-4 text-center">
-      <h1 class="font-heading text-3xl font-medium tracking-tight sm:text-4xl">
-        Welcome to OpenSkies
+  <header class="collection-intro">
+    <div>
+      <p class="eyebrow">An open collection of sky photography</p>
+      <h1 class="hero-title">
+        A little more <em>sky.</em>
       </h1>
-      <p class="max-w-[40ch] text-muted-foreground">
-        Free sky photos to download and use under the <a class="underline decoration-1 underline-offset-4 hover:text-foreground" href="/license">OpenSkies license</a>.
-      </p>
-    </header>
-    <Gallery client:load photos={photos} />
-  </div>
+    </div>
+    <p class="intro-description">
+      Clouds, light, and the space in between.
+      <br />
+      Free sky photos to download and use under the{' '}
+      <a href="/license">OpenSkies license</a>.
+    </p>
+  </header>
+  <Gallery client:load photos={photos} />
 </BaseLayout>

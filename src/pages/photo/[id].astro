@@ -6,6 +6,7 @@ import photosJson from '../../data/photos.json';
 import {
   getNeighbors,
   photoLabel,
+  photoDescription,
   previewDimensions,
   sortPhotosById,
 } from '../../lib/photos';
@@ -31,44 +32,47 @@ const preview = previewDimensions(photo);
 const previewSrc = photoUrl(photo.id, 'preview.jpg');
 ---
 
-<BaseLayout title={label} description={`Download ${label} — free sky photo from ${SITE_NAME}.`}>
-  <article class="flex w-full flex-col gap-8">
-    <nav class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 text-sm" aria-label="Photo navigation">
-      <div>
-        {
-          prev ? (
-            <a class="block truncate text-muted-foreground hover:text-foreground" href={`/photo/${prev.id}`}>
-              ← {photoLabel(prev.id)}
-            </a>
-          ) : null
-        }
-      </div>
-      <div class="justify-self-center">
-        <a class="block font-medium text-muted-foreground hover:text-foreground" href="/">All photos</a>
-      </div>
-      <div class="justify-self-end text-right">
-        {
-          next ? (
-            <a class="block truncate text-muted-foreground hover:text-foreground" href={`/photo/${next.id}`}>
-              {photoLabel(next.id)} →
-            </a>
-          ) : null
-        }
+<BaseLayout
+  title={label}
+  description={`Download ${label} — free sky photo from ${SITE_NAME}.`}
+>
+  <article class="photo-page">
+    <nav class="photo-page-navigation" aria-label="Photo navigation">
+      <a href="/">← All photographs</a>
+      <div class="photo-page-steps">
+        {prev ? (
+          <a
+            href={`/photo/${prev.id}`}
+            aria-label={`Previous photograph ${photoLabel(prev.id)}`}
+          >
+            ← {photoLabel(prev.id)}
+          </a>
+        ) : null}
+        {next ? (
+          <a
+            href={`/photo/${next.id}`}
+            aria-label={`Next photograph ${photoLabel(next.id)}`}
+          >
+            {photoLabel(next.id)} →
+          </a>
+        ) : null}
       </div>
     </nav>
 
-    <div class="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-      <h1 class="m-0 font-heading text-xl font-medium">{label}</h1>
-      <div class="flex sm:justify-end">
-        <PhotoDownloads client:load photoId={photo.id} />
+    <div class="photo-page-header">
+      <div class="photo-page-title">
+        <h1>{label}</h1>
+        <span class="small-text">
+          {photo.width} × {photo.height}
+        </span>
       </div>
+      <PhotoDownloads client:load photo={photo} />
     </div>
 
-    <figure class="m-0 w-full overflow-hidden rounded-xl bg-muted">
+    <figure class="photo-page-stage">
       <img
-        class="block h-auto w-full object-contain object-center"
         src={previewSrc}
-        alt={label}
+        alt={photoDescription(photo)}
         width={preview.width}
         height={preview.height}
         decoding="async"
@@ -76,8 +80,11 @@ const previewSrc = photoUrl(photo.id, 'preview.jpg');
       />
     </figure>
 
-    <p class="m-0 text-center text-sm text-muted-foreground">
-      Free to use under the <a class="underline decoration-1 underline-offset-4 hover:text-foreground" href="/license">OpenSkies license</a>.
-    </p>
+    <div class="photo-page-note">
+      <p>{photoDescription(photo)}</p>
+      <p>
+        Free to use under the <a href="/license">OpenSkies license</a>.
+      </p>
+    </div>
   </article>
 </BaseLayout>

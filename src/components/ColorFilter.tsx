@@ -1,53 +1,39 @@
-import {
-  COLOR_BUCKET_ORDER,
-  formatBucketLabel,
-} from '../lib/color-buckets';
+import { COLOR_BUCKET_SWATCHES, formatBucketLabel } from '../lib/color-buckets';
 import type { ColorBucket } from '../types/photo';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import type { CSSProperties } from 'react';
 
 interface ColorFilterProps {
   selected: ColorBucket | null;
   onChange: (bucket: ColorBucket | null) => void;
 }
-
-const ANY_COLOR = 'any';
-
-const COLOR_OPTIONS = [
-  { value: ANY_COLOR, label: 'Any color' },
-  ...COLOR_BUCKET_ORDER.map((bucket) => ({
-    value: bucket,
-    label: formatBucketLabel(bucket),
-  })),
-];
+const colors: (ColorBucket | null)[] = [null, 'blue', 'gray', 'orange'];
 
 export default function ColorFilter({ selected, onChange }: ColorFilterProps) {
   return (
-    <div className="mb-16 flex justify-center">
-      <Select
-        items={COLOR_OPTIONS}
-        value={selected ?? ANY_COLOR}
-        onValueChange={(value) => {
-          onChange(value && value !== ANY_COLOR ? (value as ColorBucket) : null);
-        }}
-      >
-        <SelectTrigger className="min-w-44" aria-label="Filter by color">
-          <SelectValue placeholder="Any color" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ANY_COLOR}>Any color</SelectItem>
-          {COLOR_BUCKET_ORDER.map((bucket) => (
-            <SelectItem key={bucket} value={bucket}>
-              {formatBucketLabel(bucket)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div
+      className="color-filters"
+      role="group"
+      aria-label="Filter photographs by color"
+    >
+      {colors.map((bucket) => (
+        <button
+          key={bucket ?? 'all'}
+          type="button"
+          aria-pressed={selected === bucket}
+          onClick={() => onChange(bucket)}
+        >
+          {bucket && (
+            <span
+              className="color-swatch"
+              style={
+                { '--swatch': COLOR_BUCKET_SWATCHES[bucket] } as CSSProperties
+              }
+              aria-hidden="true"
+            />
+          )}
+          {bucket ? formatBucketLabel(bucket) : 'All skies'}
+        </button>
+      ))}
     </div>
   );
 }

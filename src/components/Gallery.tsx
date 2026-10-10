@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { isColorBucket } from '../lib/color-buckets';
 import {
   colorFilterUrl,
@@ -6,12 +13,19 @@ import {
   photoPath,
   readColorParam,
 } from '../lib/history';
-import { photoLabel, sortPhotosById } from '../lib/photos';
+import {
+  galleryComposition,
+  photoDescription,
+  photoLabel,
+  sortPhotosById,
+  thumbDimensions,
+  previewDimensions,
+  resizedDimensions,
+} from '../lib/photos';
 import type { ColorBucket, Photo } from '../types/photo';
 import { photoUrl } from '../config';
 import ColorFilter from './ColorFilter';
 import PhotoModal from './PhotoModal';
-import { Card } from '@/components/ui/card';
 
 interface GalleryProps {
   photos: Photo[];
@@ -25,7 +39,8 @@ function readInitialFilter(): ColorBucket | null {
 
 export default function Gallery({ photos }: GalleryProps) {
   const sorted = useMemo(() => sortPhotosById(photos).reverse(), [photos]);
-  const [colorFilter, setColorFilter] = useState<ColorBucket | null>(readInitialFilter);
+  // Match the static HTML on the first render; apply URL state after hydration.
+  const [colorFilter, setColorFilter] = useState<ColorBucket | null>(null);
   const [openPhotoId, setOpenPhotoId] = useState<string | null>(null);
   const pushedHistory = useRef(false);
 
@@ -33,6 +48,8 @@ export default function Gallery({ photos }: GalleryProps) {
     if (!colorFilter) return sorted;
     return sorted.filter((photo) => photo.colorBucket === colorFilter);
   }, [sorted, colorFilter]);
+
+  const composition = useMemo(() => galleryComposition(filtered), [filtered]);
 
   const setFilter = (bucket: ColorBucket | null) => {
     setColorFilter(bucket);
@@ -54,7 +71,10 @@ export default function Gallery({ photos }: GalleryProps) {
     [],
   );
 
-  const openPhoto = (id: string, event: React.MouseEvent) => {
+  const openPhoto = (
+    id: string,
+    event: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
     if (
       event.button !== 0 ||
       event.metaKey ||
@@ -65,16 +85,14 @@ export default function Gallery({ photos }: GalleryProps) {
       return;
     }
     event.preventDefault();
+    event.currentTarget.focus({ preventScroll: true });
     setOpenPhotoId(id);
     history.pushState({ photoModal: true }, '', photoPath(id));
     pushedHistory.current = true;
   };
 
   useEffect(() => {
-    const param = readColorParam(window.location.search);
-    if (param && isColorBucket(param)) {
-      setColorFilter(param);
-    }
+    setColorFilter(readInitialFilter());
   }, []);
 
   useEffect(() => {
@@ -84,6 +102,8 @@ export default function Gallery({ photos }: GalleryProps) {
         setOpenPhotoId(id);
         pushedHistory.current = true;
       } else {
+        pushedHistory.current = false;
+        setColorFilter(readInitialFilter());
         handlePhotoIdChange(null, { fromPopState: true });
       }
     };
@@ -92,49 +112,73 @@ export default function Gallery({ photos }: GalleryProps) {
     return () => window.removeEventListener('popstate', onPopState);
   }, [handlePhotoIdChange]);
 
-  if (photos.length === 0) {
-    return (
-      <p className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-        No photos yet. Add originals to <code className="text-foreground">photos-source/</code> and run{' '}
-        <code className="text-foreground">pnpm process-photos</code>.
-      </p>
-    );
-  }
-
   return (
-    <>
-      <ColorFilter selected={colorFilter} onChange={setFilter} />
-
+    <section id="collection" aria-labelledby="collection-title">
+      <div className="collection-toolbar">
+        <div className="collection-heading">
+          <h2 id="collection-title">The collection</h2>
+          <p className="small-text" role="status">
+            {filtered.length}{' '}
+            {filtered.length === 1 ? 'photograph' : 'photographs'}
+          </p>
+        </div>
+        <ColorFilter selected={colorFilter} onChange={setFilter} />
+      </div>
       {filtered.length === 0 ? (
-        <p className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-          No photos match this color filter.
+        <p className="empty-message">
+          No photographs here just yet. Try another color.
         </p>
       ) : (
-        <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((photo) => {
+        <ul className="photo-grid">
+          {composition.map(({ photo, fraction, gaps }, index) => {
             const label = photoLabel(photo.id);
-
+            const thumb = thumbDimensions(photo);
+            const preview = previewDimensions(photo);
+            const medium = resizedDimensions(photo, 960);
+            const orientation =
+              photo.width < photo.height ? 'portrait' : 'landscape';
+            const mobileFull =
+              (index + 1) % 5 === 3 && orientation === 'landscape';
+            const sizes = `(max-width: 700px) ${mobileFull ? 'calc(100vw - 40px)' : 'calc((100vw - 56px) / 2)'}, (min-width: 1440px) ${Math.round((1344 - 24 * gaps) * fraction)}px, ${Math.ceil(fraction * 100)}vw`;
             return (
-              <li key={photo.id}>
+              <li
+                key={photo.id}
+                data-orientation={orientation}
+                style={
+                  {
+                    '--photo-width': `${fraction * 100}%`,
+                    '--photo-gaps': fraction * gaps,
+                  } as CSSProperties
+                }
+              >
                 <a
                   href={photoPath(photo.id)}
-                  className="group block rounded-[min(var(--radius-4xl),24px)] focus-visible:ring-3 focus-visible:ring-ring/30"
-                  aria-label={label}
+                  className="photo-link"
+                  aria-label={`View photograph ${label}. ${photoDescription(photo)}`}
                   onClick={(event) => openPhoto(photo.id, event)}
                 >
-                  <Card className="gap-0 py-0 shadow-none">
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                        src={photoUrl(photo.id, 'thumb.jpg')}
-                        alt={label}
-                        width={600}
-                        height={600}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                  </Card>
+                  <figure>
+                    <img
+                      src={photoUrl(photo.id, 'thumb.jpg')}
+                      srcSet={`${photoUrl(photo.id, 'thumb.jpg')} ${thumb.width}w, ${photoUrl(photo.id, '960.jpg')} ${medium.width}w, ${photoUrl(photo.id, 'preview.jpg')} ${preview.width}w`}
+                      sizes={sizes}
+                      alt={photoDescription(photo)}
+                      width={thumb.width}
+                      height={thumb.height}
+                      loading={index < 2 ? 'eager' : 'lazy'}
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
+                      decoding="async"
+                    />
+                    <figcaption className="photo-caption">
+                      <span className="photo-number">{label}</span>
+                      <span className="photo-view" aria-hidden="true">
+                        View photograph ↗
+                      </span>
+                      <span>
+                        {orientation === 'portrait' ? 'Portrait' : 'Landscape'}
+                      </span>
+                    </figcaption>
+                  </figure>
                 </a>
               </li>
             );
@@ -147,6 +191,6 @@ export default function Gallery({ photos }: GalleryProps) {
         photoId={openPhotoId}
         onPhotoIdChange={handlePhotoIdChange}
       />
-    </>
+    </section>
   );
 }

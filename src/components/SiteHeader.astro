@@ -1,0 +1,41 @@
+---
+import { NAV_LINKS, isCurrentPath } from '../lib/nav';
+interface Props {
+  currentPath: string;
+}
+const { currentPath } = Astro.props;
+const links = [{ href: '/', label: 'Gallery' }, ...NAV_LINKS];
+---
+
+<header class="site-header site-shell">
+  <a class="site-brand" href="/" aria-label="OpenSkies home">
+    <img
+      class="brand-light"
+      src="/logo.png"
+      alt="OpenSkies"
+      width="196"
+      height="32"
+      decoding="async"
+    />
+    <img
+      class="brand-dark"
+      src="/logo-dark.png"
+      alt="OpenSkies"
+      width="196"
+      height="32"
+      decoding="async"
+    />
+  </a>
+  <nav class="site-navigation" aria-label="Main">
+    {links.map((link) => (
+      <a
+        href={link.href}
+        aria-current={
+          isCurrentPath(currentPath, link.href) ? 'page' : undefined
+        }
+      >
+        {link.label}
+      </a>
+    ))}
+  </nav>
+</header>

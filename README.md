@@ -12,6 +12,15 @@ cp .env.example .env
 pnpm dev
 ```
 
+Run `pnpm check` for TypeScript checks and `pnpm build` to verify all static pages.
+The gallery and download controls use purpose-built React components with native
+HTML dialogs and disclosure elements. Shared navigation and document pages are
+static Astro components.
+
+The Field Notes visual system uses self-hosted Instrument Serif and Public Sans,
+with shared light/dark design tokens in `src/styles/global.css`. Gallery rows
+respect each photograph’s proportions and preserve newest-first reading order.
+
 ## Deployment
 
 The site is a Cloudflare Worker with static assets. After `pnpm build`, deploy with `pnpm deploy`.
@@ -23,6 +32,7 @@ Production downloads (`/download/...`) are handled by `src/worker.ts`. Local `pn
 1. Add originals to `photos-source/` (gitignored). Supported: `.jpg`, `.jpeg`, `.png`, `.webp`, `.tif`, `.tiff`.
 2. `pnpm process-photos` — writes `photos-build/{id}/` variants and updates `src/data/photos.json` and `id-map.json`. Skips unchanged sources when outputs already exist. Rebuild everything: `pnpm process-photos -- --force`.
 3. Set each photo’s `colorBucket` in `src/data/photos.json` (`orange`, `blue`, `gray`). New photos default to `blue` until you edit the manifest.
+   Add a visual description in `src/data/photo-descriptions.ts` for useful image alternative text. The generated manifest keeps dimensions after EXIF orientation.
 4. `pnpm upload-r2` — syncs `photos-build/` to R2 (copy `.env.example` → `.env` or `.env.local`). Skips when remote ETag matches local MD5. Flags: `--force` re-upload all; `--dry-run` preview keys (no API calls).
 
 ### Photo IDs

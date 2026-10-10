@@ -1,0 +1,30 @@
+---
+import { NAV_LINKS, LEGAL_LINKS } from '../lib/nav';
+---
+
+<footer class="site-footer site-shell">
+  <div class="footer-inner">
+    <div class="footer-note">
+      <p class="footer-line">
+        <a href="/" aria-label="Return to the gallery">
+          A little sky, freely shared.
+        </a>
+      </p>
+      <p class="small-text">
+        © 2026{' '}
+        <a
+          href="https://svenfinger.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Sven Finger
+        </a>
+      </p>
+    </div>
+    <nav aria-label="Footer">
+      {[...NAV_LINKS, ...LEGAL_LINKS].map((link) => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+    </nav>
+  </div>
+</footer>

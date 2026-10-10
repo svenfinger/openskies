@@ -6,19 +6,32 @@ import ProseLayout from '../layouts/ProseLayout.astro';
   title="License"
   description="License terms for downloading and using OpenSkies photos."
 >
-  <p>
-    All photos on OpenSkies are free to download and use, including for
-    commercial purposes, with or without modification. Attribution is appreciated
-    but not required.
+  <p class="license-lead">
+    A little atmosphere.
+    <br />
+    For your next idea.
   </p>
-  <p>You may not:</p>
-  <ul>
-    <li>
-      Sell or redistribute the photos as stock photography or as part of a
-      photo collection
-    </li>
-    <li>
-      Use the photos to compile a similar or competing service
-    </li>
-  </ul>
+  <section class="license-section" aria-labelledby="license-permissions">
+    <h2 id="license-permissions" class="eyebrow">
+      01 / Permissions
+    </h2>
+    <p>
+      All photos on OpenSkies are free to download and use, including for
+      commercial purposes, with or without modification. Attribution is
+      appreciated but not required.
+    </p>
+  </section>
+  <section class="license-section" aria-labelledby="license-restrictions">
+    <h2 id="license-restrictions" class="eyebrow">
+      02 / Restrictions
+    </h2>
+    <p>You may not:</p>
+    <ul>
+      <li>
+        Sell or redistribute the photos as stock photography or as part of a
+        photo collection
+      </li>
+      <li>Use the photos to compile a similar or competing service</li>
+    </ul>
+  </section>
 </ProseLayout>

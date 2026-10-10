@@ -1,21 +1,105 @@
 ---
-import ProseLayout from '../layouts/ProseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { photoUrl } from '../config';
 import { siteOperator } from '../lib/site-operator';
+import { photoDescriptions } from '../data/photo-descriptions';
 ---
 
-<ProseLayout
-  title="About"
-  description="About OpenSkies"
->
-  <p>
-    OpenSkies is a collection of sky photos you can download and use freely.
-  </p>
-  <p>
-    All photos are taken by hand, none are AI-generated. However, some
-    photos may be upscaled with AI to increase resolution. This is done to make
-    larger sizes available for download while preserving the original photograph.
-  </p>
-  <p>
-    Questions or feedback? Send me a <a href="https://x.com/messages/compose?recipient_id=2838010415">message on X</a> or an <a href={`mailto:${siteOperator.email}`}>email</a>.
-  </p>
-</ProseLayout>
+<BaseLayout title="About" description="About OpenSkies">
+  <article class="about-page">
+    <header class="about-intro">
+      <div>
+        <p class="eyebrow">About OpenSkies</p>
+        <h1 class="about-title">
+          A small collection.
+          <br />
+          An open <em>invitation.</em>
+        </h1>
+      </div>
+      <p class="about-lead">
+        OpenSkies is a collection of sky photos you can download and use freely.
+      </p>
+    </header>
+    <a
+      class="editorial-photo-link"
+      href="/photo/008"
+      aria-label={`View photograph #008. ${photoDescriptions['008']}`}
+    >
+      <figure class="editorial-image">
+        <img
+          src={photoUrl('008', 'preview.jpg')}
+          srcset={`${photoUrl('008', 'thumb.jpg')} 600w, ${photoUrl('008', 'preview.jpg')} 1920w`}
+          sizes="(min-width: 1440px) 1344px, calc(100vw - 40px)"
+          alt={photoDescriptions['008']}
+          width="1920"
+          height="1440"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <figcaption>
+          <span>Evening light</span>
+          <span>Photograph #008 ↗</span>
+        </figcaption>
+      </figure>
+    </a>
+    <section class="about-story" aria-labelledby="photographs-heading">
+      <div class="prose">
+        <p class="eyebrow">The photographs</p>
+        <h2 id="photographs-heading">
+          Look up.
+          <br />
+          There’s a lot to see.
+        </h2>
+        <p>
+          Clouds, light, and the space in between. Familiar skies, always a
+          little different. A little atmosphere for your next project, or simply
+          a moment to pause.
+        </p>
+        <p>
+          All photos are taken by hand, none are AI-generated. However, some
+          photos may be upscaled with AI to increase resolution. This is done to
+          make larger sizes available for download while preserving the original
+          photograph.
+        </p>
+        <p>
+          Explore <a href="/">the collection</a>, or read the{' '}
+          <a href="/license">OpenSkies license</a> for the terms of use.
+        </p>
+      </div>
+      <a
+        class="editorial-photo-link editorial-portrait"
+        href="/photo/003"
+        aria-label={`View photograph #003. ${photoDescriptions['003']}`}
+      >
+        <figure class="editorial-image">
+          <img
+            src={photoUrl('003', 'preview.jpg')}
+            srcset={`${photoUrl('003', 'thumb.jpg')} 600w, ${photoUrl('003', 'preview.jpg')} 1920w`}
+            sizes="(max-width: 700px) 70vw, (min-width: 1440px) 467px, 35vw"
+            alt={photoDescriptions['003']}
+            width="1920"
+            height="2400"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <span>A quiet gradient</span>
+            <span>#003 ↗</span>
+          </figcaption>
+        </figure>
+      </a>
+    </section>
+    <section class="about-contact" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Keep in touch.</h2>
+      <div class="prose">
+        <p>
+          Questions or feedback? Send me a{' '}
+          <a href="https://x.com/messages/compose?recipient_id=2838010415">
+            message on X
+          </a>{' '}
+          or an <a href={`mailto:${siteOperator.email}`}>email</a>.
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

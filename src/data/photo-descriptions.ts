@@ -1,0 +1,21 @@
+/** Visual descriptions kept separately from the generated photo manifest. */
+export const photoDescriptions: Record<string, string> = {
+  '001': 'Soft white clouds scattered across a pale blue sky.',
+  '002': 'A dense pattern of rippled clouds in a gray sky.',
+  '003': 'A clear sky fading from deep blue to warm light near the horizon.',
+  '004': 'Fine cloud bands catching warm light across a blue-gray sky.',
+  '005': 'Soft golden light beneath layers of gray clouds.',
+  '006': 'Vivid orange and red clouds at sunset.',
+  '007': 'Small white clouds illuminated against a blue sky.',
+  '008': 'Pink cloud streaks across a blue evening sky.',
+  '009': 'Long wisps of cloud stretching diagonally across a muted sky.',
+  '010': 'Feathery white clouds fanning across a deep blue sky.',
+  '011': 'Low white clouds beneath an open blue sky.',
+  '012': 'Delicate white cloud trails across a blue sky.',
+  '013': 'A sweeping band of textured white clouds against blue.',
+  '014': 'Thin, pale clouds drifting across a blue sky.',
+  '015': 'Bright cumulus clouds against a deep blue sky.',
+  '016': 'Layers of sunlit cumulus clouds with blue sky between them.',
+  '017': 'Soft gray and white cumulus clouds against blue.',
+  '018': 'A curved ribbon of cloud above soft evening light.',
+};

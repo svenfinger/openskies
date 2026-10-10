@@ -14,5 +14,5 @@ export function formatBucketLabel(bucket: ColorBucket): string {
 }
 
 export function isColorBucket(value: string): value is ColorBucket {
-  return value in COLOR_BUCKET_SWATCHES;
+  return Object.hasOwn(COLOR_BUCKET_SWATCHES, value);
 }

@@ -1,27 +1,27 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef } from 'react';
+import { Cancel01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
 import { photoUrl } from '../config';
 import { photoPath } from '../lib/history';
 import {
   getNeighbors,
   photoLabel,
+  photoDescription,
   previewDimensions,
 } from '../lib/photos';
 import type { Photo } from '../types/photo';
 import PhotoDownloads from './PhotoDownloads';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import Modal from './Modal';
 
 const SWIPE_THRESHOLD = 48;
 
 interface PhotoModalProps {
   photos: Photo[];
   photoId: string | null;
-  onPhotoIdChange: (id: string | null, options?: { fromPopState?: boolean }) => void;
+  onPhotoIdChange: (
+    id: string | null,
+    options?: { fromPopState?: boolean },
+  ) => void;
 }
 
 export default function PhotoModal({
@@ -29,7 +29,9 @@ export default function PhotoModal({
   photoId,
   onPhotoIdChange,
 }: PhotoModalProps) {
-  const touchStartX = useRef<number | null>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const skipClickFromSwipe = useRef(false);
   const lastPhotoRef = useRef<Photo | null>(null);
   const photo = photoId ? (photos.find((p) => p.id === photoId) ?? null) : null;
@@ -73,13 +75,12 @@ export default function PhotoModal({
       if (
         target instanceof Element &&
         target.closest(
-          'input, textarea, select, [contenteditable="true"], [role="menu"], [role="listbox"]',
+          'input, textarea, select, [contenteditable="true"], [role="menu"], [role="listbox"], details[open]',
         )
       ) {
         return;
       }
 
-      // Base UI dialogs stop composite keys (arrows) from bubbling, so listen on capture.
       if (event.key === 'ArrowLeft' && prev) {
         event.preventDefault();
         goTo(prev.id);
@@ -89,8 +90,8 @@ export default function PhotoModal({
       }
     };
 
-    window.addEventListener('keydown', onKeyDown, true);
-    return () => window.removeEventListener('keydown', onKeyDown, true);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [open, prev, next, goTo]);
 
   const goToUnlessSwiped = (id: string) => {
@@ -103,17 +104,22 @@ export default function PhotoModal({
 
   const onTouchStart = (event: React.TouchEvent) => {
     skipClickFromSwipe.current = false;
-    touchStartX.current = event.touches[0]?.clientX ?? null;
+    const touch = event.touches[0];
+    touchStart.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
   };
 
   const onTouchEnd = (event: React.TouchEvent) => {
-    const startX = touchStartX.current;
-    const endX = event.changedTouches[0]?.clientX;
-    touchStartX.current = null;
-    if (startX == null || endX == null) return;
+    const start = touchStart.current;
+    const end = event.changedTouches[0];
+    touchStart.current = null;
+    if (!start || !end) return;
 
-    const delta = endX - startX;
-    if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+    const delta = end.clientX - start.x;
+    if (
+      Math.abs(delta) < SWIPE_THRESHOLD ||
+      Math.abs(delta) < Math.abs(end.clientY - start.y) * 1.2
+    )
+      return;
 
     skipClickFromSwipe.current = true;
     if (delta < 0 && next) goTo(next.id);
@@ -126,56 +132,86 @@ export default function PhotoModal({
   const preview = previewDimensions(displayedPhoto);
 
   return (
-    <Dialog
+    <Modal
       open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) close();
-      }}
+      onDismiss={close}
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
+      className="photo-modal"
     >
-      <DialogContent
-        className="flex h-[calc(100dvh-3rem)] max-h-[calc(100dvh-3rem)] w-[calc(100%-3rem)] max-w-[min(1920px,calc(100%-3rem))] flex-col gap-4 overflow-hidden px-6 pt-4 pb-6 sm:max-w-[min(1920px,calc(100%-3rem))]"
-        showCloseButton
+      <div className="viewer-header">
+        <div className="viewer-title">
+          <h2 id={titleId}>{label}</h2>
+          <span className="small-text">
+            {displayedPhoto.width} × {displayedPhoto.height}
+          </span>
+        </div>
+        <div className="viewer-actions">
+          <PhotoDownloads photo={displayedPhoto} />
+          <button
+            type="button"
+            className="site-icon-button"
+            aria-label="Close photograph"
+            onClick={close}
+          >
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              strokeWidth={1.5}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="viewer-stage"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
+        onTouchCancel={() => {
+          touchStart.current = null;
+        }}
       >
-        <DialogHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-3 pr-10">
-          <DialogTitle>{label}</DialogTitle>
-          <PhotoDownloads photoId={displayedPhoto.id} />
-        </DialogHeader>
+        <img
+          draggable={false}
+          src={photoUrl(displayedPhoto.id, 'preview.jpg')}
+          alt={photoDescription(displayedPhoto)}
+          width={preview.width}
+          height={preview.height}
+          decoding="async"
+        />
+        {prev ? (
+          <button
+            type="button"
+            className="viewer-step viewer-step-prev"
+            aria-label={`Previous photo (${photoLabel(prev.id)})`}
+            onClick={() => goToUnlessSwiped(prev.id)}
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+        ) : null}
+        {next ? (
+          <button
+            type="button"
+            className="viewer-step viewer-step-next"
+            aria-label={`Next photo (${photoLabel(next.id)})`}
+            onClick={() => goToUnlessSwiped(next.id)}
+          >
+            <span aria-hidden="true">→</span>
+          </button>
+        ) : null}
+      </div>
 
-        <div className="relative flex min-h-0 flex-1 select-none items-center justify-center overflow-hidden rounded-xl bg-muted">
-          <img
-            className="pointer-events-none size-full object-contain touch-pan-y"
-            draggable={false}
-            src={photoUrl(displayedPhoto.id, 'preview.jpg')}
-            alt={label}
-            width={preview.width}
-            height={preview.height}
-            decoding="async"
-          />
-          {prev ? (
-            <button
-              type="button"
-              className="absolute inset-y-0 left-0 z-10 w-1/2 cursor-pointer touch-manipulation border-0 bg-transparent p-0"
-              aria-label={`Previous photo (${photoLabel(prev.id)})`}
-              onClick={() => goToUnlessSwiped(prev.id)}
-            />
-          ) : null}
-          {next ? (
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 z-10 w-1/2 cursor-pointer touch-manipulation border-0 bg-transparent p-0"
-              aria-label={`Next photo (${photoLabel(next.id)})`}
-              onClick={() => goToUnlessSwiped(next.id)}
-            />
-          ) : null}
-        </div>
-
-        <DialogDescription className="shrink-0 text-center">
-          Free to use under the{' '}
-          <a href="/license">OpenSkies license</a>.
-        </DialogDescription>
-      </DialogContent>
-    </Dialog>
+      <div className="viewer-footer">
+        <p id={descriptionId}>
+          Free to use under the <a href="/license">OpenSkies license</a>.
+        </p>
+        <span className="viewer-index">
+          {String(
+            photos.findIndex((p) => p.id === displayedPhoto.id) + 1,
+          ).padStart(2, '0')}{' '}
+          / {String(photos.length).padStart(2, '0')}
+        </span>
+      </div>
+    </Modal>
   );
 }
