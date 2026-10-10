@@ -1,19 +1,11 @@
-import {
-  SITE_ADDRESS_LINE_1,
-  SITE_ADDRESS_LINE_2,
-  SITE_ADDRESS_LINE_3,
-  SITE_OPERATOR_EMAIL,
-  SITE_OPERATOR_NAME,
-} from 'astro:env/server';
-
-/** Operator details for imprint / legal pages (from build-time env, not in git). */
+/** Operator details for imprint / legal pages. */
 export const siteOperator = {
-  name: SITE_OPERATOR_NAME,
-  email: SITE_OPERATOR_EMAIL,
+  name: 'Sven Finger',
+  email: 'hi@svenfinger.com',
   addressLines: [
-    SITE_ADDRESS_LINE_1,
-    SITE_ADDRESS_LINE_2,
-    SITE_ADDRESS_LINE_3,
+    'Spitzbergenweg 20b',
+    '22145 Hamburg',
+    'Germany',
   ],
 } as const;
 
