@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -26,6 +27,7 @@ import type { ColorBucket, Photo } from '../types/photo';
 import { photoUrl } from '../config';
 import ColorFilter from './ColorFilter';
 import PhotoModal from './PhotoModal';
+import { createGalleryMotion } from '../lib/gallery-motion';
 
 interface GalleryProps {
   photos: Photo[];
@@ -42,7 +44,10 @@ export default function Gallery({ photos }: GalleryProps) {
   // Match the static HTML on the first render; apply URL state after hydration.
   const [colorFilter, setColorFilter] = useState<ColorBucket | null>(null);
   const [openPhotoId, setOpenPhotoId] = useState<string | null>(null);
+  const [animatePhotoOpen, setAnimatePhotoOpen] = useState(false);
   const pushedHistory = useRef(false);
+  const collectionRef = useRef<HTMLElement | null>(null);
+  const [motion] = useState(createGalleryMotion);
 
   const filtered = useMemo(() => {
     if (!colorFilter) return sorted;
@@ -51,10 +56,15 @@ export default function Gallery({ photos }: GalleryProps) {
 
   const composition = useMemo(() => galleryComposition(filtered), [filtered]);
 
-  const setFilter = (bucket: ColorBucket | null) => {
+  const setFilter = (bucket: ColorBucket | null, animate: boolean) => {
+    if (bucket === colorFilter) return;
+    motion.prepare(collectionRef.current, animate);
     setColorFilter(bucket);
     history.replaceState(history.state, '', colorFilterUrl(bucket));
   };
+
+  useLayoutEffect(() => motion.arrive(collectionRef.current), [colorFilter, motion]);
+  useEffect(() => () => motion.cancel(), [motion]);
 
   const handlePhotoIdChange = useCallback(
     (id: string | null, options?: { fromPopState?: boolean }) => {
@@ -85,7 +95,9 @@ export default function Gallery({ photos }: GalleryProps) {
       return;
     }
     event.preventDefault();
+    motion.cancel();
     event.currentTarget.focus({ preventScroll: true });
+    setAnimatePhotoOpen(event.detail > 0);
     setOpenPhotoId(id);
     history.pushState({ photoModal: true }, '', photoPath(id));
     pushedHistory.current = true;
@@ -97,8 +109,10 @@ export default function Gallery({ photos }: GalleryProps) {
 
   useEffect(() => {
     const onPopState = () => {
+      motion.cancel();
       const id = photoIdFromPath(window.location.pathname);
       if (id) {
+        setAnimatePhotoOpen(false);
         setOpenPhotoId(id);
         pushedHistory.current = true;
       } else {
@@ -110,7 +124,7 @@ export default function Gallery({ photos }: GalleryProps) {
 
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [handlePhotoIdChange]);
+  }, [handlePhotoIdChange, motion]);
 
   return (
     <section id="collection" aria-labelledby="collection-title">
@@ -125,11 +139,11 @@ export default function Gallery({ photos }: GalleryProps) {
         <ColorFilter selected={colorFilter} onChange={setFilter} />
       </div>
       {filtered.length === 0 ? (
-        <p className="empty-message">
+        <p className="empty-message" ref={(element) => { collectionRef.current = element; }}>
           No photographs here just yet. Try another color.
         </p>
       ) : (
-        <ul className="photo-grid">
+        <ul className="photo-grid" ref={(element) => { collectionRef.current = element; }}>
           {composition.map(({ photo, fraction, gaps }, index) => {
             const label = photoLabel(photo.id);
             const thumb = thumbDimensions(photo);
@@ -159,6 +173,7 @@ export default function Gallery({ photos }: GalleryProps) {
                 >
                   <figure>
                     <img
+                      data-gallery-photo={photo.id}
                       src={photoUrl(photo.id, 'thumb.jpg')}
                       srcSet={`${photoUrl(photo.id, 'thumb.jpg')} ${thumb.width}w, ${photoUrl(photo.id, '960.jpg')} ${medium.width}w, ${photoUrl(photo.id, 'preview.jpg')} ${preview.width}w`}
                       sizes={sizes}
@@ -189,6 +204,7 @@ export default function Gallery({ photos }: GalleryProps) {
       <PhotoModal
         photos={filtered}
         photoId={openPhotoId}
+        animateOpen={animatePhotoOpen}
         onPhotoIdChange={handlePhotoIdChange}
       />
     </section>

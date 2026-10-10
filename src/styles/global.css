@@ -549,17 +549,60 @@
 }
 .photo-modal[open] {
   display: flex;
-  animation: viewer-in 160ms ease-out;
 }
-@keyframes viewer-in {
+.photo-modal[data-photo-opening]::backdrop {
+  animation: photo-backdrop-in var(--photo-backdrop-duration) linear both;
+}
+@keyframes photo-backdrop-in {
   from {
-    opacity: 0;
-    transform: translateY(4px);
+    opacity: var(--photo-backdrop-from, 0);
   }
   to {
     opacity: 1;
-    transform: none;
   }
+}
+/* A visual-only top-layer proxy; native dialog semantics stay on the real viewer. */
+.photo-motion-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  pointer-events: none;
+}
+.photo-motion-layer::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+.photo-motion-layer * {
+  pointer-events: none !important;
+}
+.photo-motion-image {
+  position: absolute;
+  max-width: none;
+  object-fit: fill;
+  transform-origin: top left;
+  will-change: transform;
+}
+.photo-motion-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(8 18 13 / 65%);
+}
+.photo-motion-surface {
+  position: absolute;
+  inset: auto;
+  margin: 0;
+  max-width: none;
+  max-height: none;
+  background: var(--paper);
+  color: var(--ink);
 }
 .viewer-header {
   display: flex;
@@ -680,21 +723,54 @@
   overflow: hidden;
   background: var(--stage);
   user-select: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Inert presentation layers never replace the live controls or image semantics. */
+.viewer-motion-layer,
+.viewer-motion-track {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.viewer-motion-track {
+  will-change: transform;
+}
+.viewer-motion-layer {
+  background: var(--stage);
+}
+.viewer-motion-layer img {
+  position: absolute;
+  inset: 0;
+}
+.gallery-motion-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+.gallery-motion-overlay * {
+  pointer-events: none;
 }
 .viewer-stage img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 .viewer-step {
+  z-index: 1;
   position: absolute;
   inset-block: 0;
   width: 50%;
   background: transparent;
   border: 0;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 .viewer-step-prev {
   left: 0;
@@ -1040,5 +1116,9 @@
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+  .photo-modal[data-photo-opening]::backdrop {
+    /* The sole reduced-motion exception is a short opacity-only handoff. */
+    animation: photo-backdrop-in var(--photo-backdrop-duration) linear both !important;
   }
 }

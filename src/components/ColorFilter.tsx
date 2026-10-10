@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react';
 
 interface ColorFilterProps {
   selected: ColorBucket | null;
-  onChange: (bucket: ColorBucket | null) => void;
+  onChange: (bucket: ColorBucket | null, animate: boolean) => void;
 }
 const colors: (ColorBucket | null)[] = [null, 'blue', 'gray', 'orange'];
 
@@ -20,7 +20,7 @@ export default function ColorFilter({ selected, onChange }: ColorFilterProps) {
           key={bucket ?? 'all'}
           type="button"
           aria-pressed={selected === bucket}
-          onClick={() => onChange(bucket)}
+          onClick={(event) => onChange(bucket, event.detail > 0)}
         >
           {bucket && (
             <span

@@ -31,3 +31,8 @@ photos-build/
 # editors
 .idea/
 .vscode/
+
+# skills
+.agents
+.claude
+skills-lock.json

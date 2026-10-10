@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  useLayoutEffect,
   useRef,
   type ComponentProps,
   type PointerEvent,
@@ -11,26 +11,35 @@ interface ModalProps extends Omit<
   'open' | 'onCancel'
 > {
   open: boolean;
-  onDismiss: () => void;
+  onDismiss: (animate: boolean) => void;
+  transition?: {
+    open: (dialog: HTMLDialogElement) => void;
+    close: (dialog: HTMLDialogElement) => void;
+  };
 }
 
 /** Native photo dialog with focus restoration and deliberate backdrop dismissal. */
 export default function Modal({
   open,
   onDismiss,
+  transition,
   children,
   className = '',
   ...props
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const backdropPointerDown = useRef(false);
+  const transitionRef = useRef(transition);
+  transitionRef.current = transition;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog || !open) return;
     const opener = document.activeElement;
     dialog.showModal();
+    transitionRef.current?.open(dialog);
     return () => {
+      transitionRef.current?.close(dialog);
       dialog.close();
       if (opener instanceof HTMLElement && opener.isConnected) {
         opener.focus({ preventScroll: true });
@@ -58,7 +67,7 @@ export default function Modal({
       className={`site-dialog ${className}`}
       onCancel={(event) => {
         event.preventDefault();
-        onDismiss();
+        onDismiss(false);
       }}
       onKeyDown={(event) => {
         if (event.key !== 'Tab') return;
@@ -81,7 +90,7 @@ export default function Modal({
         backdropPointerDown.current = isBackdrop(event);
       }}
       onClick={(event) => {
-        if (backdropPointerDown.current && isBackdrop(event)) onDismiss();
+        if (backdropPointerDown.current && isBackdrop(event)) onDismiss(true);
         backdropPointerDown.current = false;
       }}
     >
