@@ -22,17 +22,40 @@ export default function PhotoDownloads({ photo }: PhotoDownloadsProps) {
   const photoId = photo.id;
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const animationRef = useRef<Animation | null>(null);
-  const pointerOpen = useRef(false);
   const original = DOWNLOAD_ORIGINAL;
 
   function closeOptions(restoreFocus = false) {
-    pointerOpen.current = false;
     animationRef.current?.cancel();
     animationRef.current = null;
     const details = detailsRef.current;
     if (!details?.open) return;
     details.open = false;
     if (restoreFocus) details.querySelector('summary')?.focus();
+  }
+
+  function openOptions(animate: boolean) {
+    const details = detailsRef.current;
+    if (!details || details.open) return;
+    animationRef.current?.cancel();
+    animationRef.current = null;
+
+    // Open and animate in the same task. The native toggle event is deferred,
+    // so starting there can paint the final position before jumping back.
+    details.open = true;
+    const panel = details.querySelector('.download-list');
+    if (!animate || !panel || typeof panel.animate !== 'function') return;
+
+    const reduce = reducedMotion();
+    const animation = panel.animate(
+      reduce
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }],
+      { duration: reduce ? MOTION.reduced : MOTION.menu, easing: reduce ? 'linear' : MOTION.ease },
+    );
+    animationRef.current = animation;
+    void animation.finished.then(() => {
+      if (animationRef.current === animation) animationRef.current = null;
+    }, () => {});
   }
 
   useEffect(() => {
@@ -62,7 +85,6 @@ export default function PhotoDownloads({ photo }: PhotoDownloadsProps) {
   }, [photoId]);
 
   function onKeyDown(event: KeyboardEvent<HTMLDetailsElement>) {
-    pointerOpen.current = false;
     animationRef.current?.cancel();
     const details = event.currentTarget;
     if (event.key === 'Escape' && details.open) {
@@ -111,30 +133,14 @@ export default function PhotoDownloads({ photo }: PhotoDownloadsProps) {
         ref={detailsRef}
         className="download-options"
         onKeyDown={onKeyDown}
-        onToggle={(event) => {
-          animationRef.current?.cancel();
-          animationRef.current = null;
-          const panel = event.currentTarget.querySelector('.download-list');
-          if (event.currentTarget.open && pointerOpen.current && panel && typeof panel.animate === 'function') {
-            const reduce = reducedMotion();
-            const animation = panel.animate(
-              reduce ? [{ opacity: 0 }, { opacity: 1 }] :
-                [{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }],
-              { duration: reduce ? MOTION.reduced : MOTION.menu, easing: reduce ? 'linear' : MOTION.ease },
-            );
-            animationRef.current = animation;
-            void animation.finished.then(() => {
-              if (animationRef.current === animation) animationRef.current = null;
-            }, () => {});
-          }
-          pointerOpen.current = false;
-        }}
       >
         <summary
           className="site-button download-trigger"
           aria-label="Choose download size"
           onClick={(event) => {
-            pointerOpen.current = event.detail > 0 && !detailsRef.current?.open;
+            event.preventDefault();
+            if (detailsRef.current?.open) closeOptions();
+            else openOptions(event.detail > 0);
           }}
         >
           <HugeiconsIcon
